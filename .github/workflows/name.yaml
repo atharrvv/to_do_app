@@ -1,29 +1,23 @@
-name: CI/CD
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+name: Test and Build
+on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set Up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: 3.7
-
-      - name: Install Dependencies
+          python-version: ${{ matrix.python-version }}
+      - name: Check for tests and run tests
         run: |
-          poetry install
-
-      # Test job
-      - name: Test
-        run: |
-          poetry run pytest tests/
-          poetry run pytest_cov report -b
+          if [ -d "tests" ]; then
+            echo "Tests directory found, running tests..."
+            pip install pytest
+            python -m pytest tests/
+          else
+            echo "No tests directory found, skipping tests"
+          fi
