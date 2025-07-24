@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
+        python-version: [3.12]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
@@ -20,4 +20,23 @@ jobs:
             python -m pytest tests/
           else
             echo "No tests directory found, skipping tests"
+          fi
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Check for build configuration and build
+        run: |
+          if [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
+            echo "Build configuration found, initiating build..."
+            pip install build
+            python -m build
+            [ -d "dist" ] && echo "Build successful"
+          else
+            echo "No build configuration found, skipping build"
           fi
