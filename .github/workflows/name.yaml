@@ -1,42 +1,36 @@
-name: Test and Build
-on: [push, pull_request]
+name: Multi-Layer CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
-  test:
+  database-setup:
+    name: Database Setup
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.12]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Check for tests and run tests
-        run: |
-          if [ -d "tests" ]; then
-            echo "Tests directory found, running tests..."
-            pip install pytest
-            python -m pytest tests/
-          else
-            echo "No tests directory found, skipping tests"
-          fi
+      - name: Checkout codebase
+        uses: actions/checkout@v4
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - name: Setup Python environment
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.11
-      - name: Check for build configuration and build
+          python-version: "3.x"
+
+      - name: Install MySQL dependencies
+        run: sudo apt-get update && sudo apt-get install -y mysql-client
+
+      - name: Install PostgreSQL dependencies
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Database Setup README.md Step 1
         run: |
-          if [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
-            echo "Build configuration found, initiating build..."
-            pip install build
-            python -m build
-            [ -d "dist" ] && echo "Build successful"
-          else
-            echo "No build configuration found, skipping build"
-          fi
+          echo "Create database pygmy (use MySQL/PostgreSQL)"
+          # For MySQL or PostgreSQL follow pygm Configuring/Testing Access
+
+      - PostServices`
