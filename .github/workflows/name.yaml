@@ -31,5 +31,3 @@ jobs:
         run: |
           echo "Create database pygmy (use MySQL/PostgreSQL)"
           # For MySQL or PostgreSQL follow pygm Configuring/Testing Access
-
-      - PostServices`
